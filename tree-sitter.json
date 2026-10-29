@@ -1,0 +1,45 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "ecsoberon",
+      "camelcase": "ECSOberon",
+      "title": "ECSOberon parser",
+      "scope": "source.ecsoberon",
+      "file-types": [
+        "mod",
+        "ob2"
+      ],
+      "injection-regex": "^ecsoberon$",
+      "class-name": "TreeSitterEcsoberon",
+      "highlights": "queries/highlights.scm",
+      "tags": "queries/tags.scm"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Parser for the ECS Oberon variant (Oberon-2)",
+    "authors": [
+      {
+        "name": "Runar Tenfjord",
+        "email": "runar.tenfjord@gmail.com",
+        "url": "http://tenko.no"
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/tenko/tree-sitter-ecsoberon",
+      "funding": ""
+    }
+  },
+  "bindings": {
+    "c": true,
+    "go": true,
+    "java": false,
+    "node": true,
+    "python": true,
+    "rust": true,
+    "swift": true,
+    "zig": false
+  }
+}

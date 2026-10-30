@@ -64,6 +64,9 @@
   "THEN"
   "ELSIF"
   "WITH"
+  "RETURN"
+  "EXIT"
+  "WITH"
 ] @keyword
 
 ; Builting Types

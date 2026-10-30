@@ -73,7 +73,7 @@ export default grammar({
       global: $ => [
       'MODULE', 'END', 'IN', 'IMPORT', 'CONST', 'TYPE', 'VAR', 'ARRAY', 'OF', 'POINTER',
       'BEGIN', 'RECORD', 'PROCEDURE', 'IS', 'FOR', 'TO', 'BY', 'REPEAT', 'UNTIL', 'WHILE',
-      'LOOP', 'EXIT', 'RETURN', 'CASE', 'IF', 'THEN', 'ELSIF', 'WITH'
+      'LOOP', 'EXIT', 'RETURN', 'CASE', 'IF', 'THEN', 'ELSE', 'ELSIF', 'WITH', 'DO'
       ],
       properties: $ => [],
     },
@@ -95,7 +95,7 @@ export default grammar({
         repeat($.var_declaration),
         repeat($.procedure_declaration),
       ),
-      $.module_body,
+      optional($.module_body),
       $.module_footer,
       optional($.module_prolog)
     ),
@@ -317,7 +317,7 @@ export default grammar({
     )),
 
     index_expression: $ => prec(PREC.primary, seq(
-      field('operand', seq($.identifier, repeat(sep1($.identifier, '.')))),
+      field('qualiden', $.qualified_identifier),
       '[',
       field('field', commaSep1($._expression)),
       ']'
@@ -370,11 +370,8 @@ export default grammar({
     empty_statement: _ => terminator,
 
     _simple_statement: $ => choice(
-      $.expression_statement,
       $.assignment_statement,
     ),
-
-    expression_statement: $ => $._expression,
 
     assignment_statement: $ => seq(
       field('left', $.identifier),
@@ -382,7 +379,7 @@ export default grammar({
       field('right', $._expression),
     ),
 
-    exit_statement: $ => 'EXIT',
+    exit_statement: $ => seq('EXIT'),
 
     return_statement: $ => seq(
       'RETURN',
@@ -489,7 +486,17 @@ export default grammar({
     ),
 
     identifier: _ => /[a-zA-Z][_a-zA-Z0-9]*/,
-    qualified_identifier: ($) => seq($.identifier, repeat(sep1($.identifier, '.'))),
+
+    qualified_identifier: ($) => prec.left(
+      choice(
+        seq($.identifier),
+        seq(
+          field("qualifier", repeat1(seq($.identifier, $.dot))),
+          field("property", $.identifier),
+        )
+      ),
+    ),
+
     identifier_exported: ($) => seq($.identifier, optional("*")),
     identifier_field: ($) => seq($.identifier, optional(choice("*","-"))),
     identifier_parameter: ($) => seq($.identifier, optional("-")),

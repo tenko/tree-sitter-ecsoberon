@@ -51,8 +51,16 @@
           ]
         },
         {
-          "type": "SYMBOL",
-          "name": "module_body"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "module_body"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         },
         {
           "type": "SYMBOL",
@@ -1538,43 +1546,10 @@
         "members": [
           {
             "type": "FIELD",
-            "name": "operand",
+            "name": "qualiden",
             "content": {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "identifier"
-                },
-                {
-                  "type": "REPEAT",
-                  "content": {
-                    "type": "SEQ",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      {
-                        "type": "REPEAT",
-                        "content": {
-                          "type": "SEQ",
-                          "members": [
-                            {
-                              "type": "STRING",
-                              "value": "."
-                            },
-                            {
-                              "type": "SYMBOL",
-                              "name": "identifier"
-                            }
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                }
-              ]
+              "type": "SYMBOL",
+              "name": "qualified_identifier"
             }
           },
           {
@@ -1979,17 +1954,9 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "expression_statement"
-        },
-        {
-          "type": "SYMBOL",
           "name": "assignment_statement"
         }
       ]
-    },
-    "expression_statement": {
-      "type": "SYMBOL",
-      "name": "_expression"
     },
     "assignment_statement": {
       "type": "SEQ",
@@ -2021,8 +1988,13 @@
       ]
     },
     "exit_statement": {
-      "type": "STRING",
-      "value": "EXIT"
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "EXIT"
+        }
+      ]
     },
     "return_statement": {
       "type": "SEQ",
@@ -2525,41 +2497,55 @@
       "value": "[a-zA-Z][_a-zA-Z0-9]*"
     },
     "qualified_identifier": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "identifier"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
+      "type": "PREC_LEFT",
+      "value": 0,
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
             "type": "SEQ",
             "members": [
               {
                 "type": "SYMBOL",
                 "name": "identifier"
+              }
+            ]
+          },
+          {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "FIELD",
+                "name": "qualifier",
+                "content": {
+                  "type": "REPEAT1",
+                  "content": {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "identifier"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "dot"
+                      }
+                    ]
+                  }
+                }
               },
               {
-                "type": "REPEAT",
+                "type": "FIELD",
+                "name": "property",
                 "content": {
-                  "type": "SEQ",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "."
-                    },
-                    {
-                      "type": "SYMBOL",
-                      "name": "identifier"
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "identifier"
                 }
               }
             ]
           }
-        }
-      ]
+        ]
+      }
     },
     "identifier_exported": {
       "type": "SEQ",
@@ -3396,11 +3382,19 @@
       },
       {
         "type": "STRING",
+        "value": "ELSE"
+      },
+      {
+        "type": "STRING",
         "value": "ELSIF"
       },
       {
         "type": "STRING",
         "value": "WITH"
+      },
+      {
+        "type": "STRING",
+        "value": "DO"
       }
     ],
     "properties": []

@@ -8,8 +8,9 @@
 // @ts-check
 
 const PREC = {
-  primary: 7,
-  unary: 6,
+  primary: 8,
+  unary: 7,
+  pointer: 6,
   multiplicative: 5,
   additive: 4,
   comparative: 3,
@@ -88,12 +89,18 @@ export default grammar({
   rules: {
     source_file: $ => seq(
       $.module_header,
-      repeat($.import_declaration),
-      seq(
-        repeat($.const_declaration),
-        repeat($.type_declaration),
-        repeat($.var_declaration),
-        repeat($.procedure_declaration),
+      repeat($.import_declaration,),
+      repeat(
+        seq(
+          choice(
+            $.const_declaration,
+            $.type_declaration,
+            $.var_declaration,
+            $.procedure_forward_declaration,
+            $.procedure_declaration,
+          ),
+          optional(terminator),
+        )
       ),
       optional($.module_body),
       $.module_footer,
@@ -175,9 +182,14 @@ export default grammar({
     ),
 
     var_spec: $ => prec.left(seq(
-      optional('^'),
-      field('name', $.identifier_field),
-      optional(seq("[", $._expression, "]")),
+      choice(
+        seq(
+          '^',
+          field('name', $.identifier_field),
+          optional(seq("[", $._expression, "]")),
+        ),
+      commaSep1($.identifier_field),
+    ),
       ':',
       field('type', $._type),
     )),
@@ -223,15 +235,29 @@ export default grammar({
       optional(choice('*', '-')),
       optional(seq('(', $._type, ')')),
       optional(seq($._record_field, repeat(seq(terminator, $._record_field)))),
+      optional(terminator),
       'END',
     ),
 
-    _record_field: ($) => seq($.identifier_field, ':', $._type),
+    _record_field: ($) => seq(commaSep($.identifier_field), ':', $._type),
 
     _procedure_type: ($) => prec.left(seq(
       'PROCEDURE',
       field('parameters', optional($._formal_parameter_list)),
       field('return_type', optional(seq(':', $._basic_type))),
+    )),
+
+    procedure_forward_declaration: ($) => prec.right(1, seq(
+      'PROCEDURE',
+      '^',
+      field('name', $.identifier_exported),
+      field('reference', optional(seq('[', choice($.string_literal, $.int_literal, $.identifier), ']'))),
+      optional(
+        seq(
+          field('parameters', $._formal_parameter_list),
+          field('return_type', optional(seq(':', $._basic_type))),
+        ),
+      ),
     )),
 
     procedure_header: ($) => seq(
@@ -244,6 +270,7 @@ export default grammar({
           field('return_type', optional(seq(':', $._basic_type))),
         ),
       ),
+      terminator,
     ),
 
     procedure_body: ($) => $.statement_list,
@@ -255,11 +282,17 @@ export default grammar({
 
     procedure_declaration: $ => prec.right(1, seq(
       $.procedure_header,
-      terminator,
-      optional($.const_declaration),
-      optional($.type_declaration),
-      optional($.var_declaration),
-      optional($.procedure_declaration),
+      repeat(
+        seq(
+          choice(
+            $.const_declaration,
+            $.type_declaration,
+            $.var_declaration,
+            $.procedure_declaration
+          ),
+          optional(terminator),
+        )
+      ),
       'BEGIN',
       optional($.procedure_body),
       $.procedure_footer,
@@ -288,6 +321,7 @@ export default grammar({
 
     _expression: $ => choice(
       $.unary_expression,
+      $.pointer_expression,
       $.binary_expression,
       $.selector_expression,
       $.index_expression,
@@ -331,6 +365,11 @@ export default grammar({
     unary_expression: $ => prec(PREC.unary, seq(
       field('operator', choice('+', '-', '~')),
       field('operand', $._expression),
+    )),
+
+    pointer_expression: $ => prec(PREC.pointer, seq(
+      field('operand', $._expression),
+      field('operator', choice('^')),
     )),
 
     binary_expression: $ => {

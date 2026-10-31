@@ -54,6 +54,10 @@
         "named": true
       },
       {
+        "type": "pointer_expression",
+        "named": true
+      },
+      {
         "type": "selector_expression",
         "named": true
       },
@@ -747,6 +751,32 @@
     }
   },
   {
+    "type": "pointer_expression",
+    "named": true,
+    "fields": {
+      "operand": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "_expression",
+            "named": true
+          }
+        ]
+      },
+      "operator": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "^",
+            "named": false
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "procedure_body",
     "named": true,
     "fields": {},
@@ -810,6 +840,162 @@
         "types": [
           {
             "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "procedure_forward_declaration",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier_exported",
+            "named": true
+          },
+          {
+            "type": "type_identifier",
+            "named": true
+          }
+        ]
+      },
+      "package": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "package_identifier",
+            "named": true
+          }
+        ]
+      },
+      "parameters": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "(",
+            "named": false
+          },
+          {
+            "type": ")",
+            "named": false
+          },
+          {
+            "type": ",",
+            "named": false
+          },
+          {
+            "type": "-",
+            "named": false
+          },
+          {
+            "type": ".",
+            "named": false
+          },
+          {
+            "type": ":",
+            "named": false
+          },
+          {
+            "type": ";",
+            "named": false
+          },
+          {
+            "type": "ARRAY",
+            "named": false
+          },
+          {
+            "type": "OF",
+            "named": false
+          },
+          {
+            "type": "POINTER",
+            "named": false
+          },
+          {
+            "type": "PROCEDURE",
+            "named": false
+          },
+          {
+            "type": "TO",
+            "named": false
+          },
+          {
+            "type": "VAR",
+            "named": false
+          },
+          {
+            "type": "_basic_type",
+            "named": true
+          },
+          {
+            "type": "_expression",
+            "named": true
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "identifier_parameter",
+            "named": true
+          },
+          {
+            "type": "package_identifier",
+            "named": true
+          },
+          {
+            "type": "record_type",
+            "named": true
+          },
+          {
+            "type": "type_identifier",
+            "named": true
+          }
+        ]
+      },
+      "reference": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "[",
+            "named": false
+          },
+          {
+            "type": "]",
+            "named": false
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "int_literal",
+            "named": true
+          },
+          {
+            "type": "string_literal",
+            "named": true
+          }
+        ]
+      },
+      "return_type": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": ":",
+            "named": false
+          },
+          {
+            "type": "_basic_type",
             "named": true
           }
         ]
@@ -1353,6 +1539,10 @@
           "named": true
         },
         {
+          "type": "procedure_forward_declaration",
+          "named": true
+        },
+        {
           "type": "type_declaration",
           "named": true
         },
@@ -1684,7 +1874,7 @@
     "fields": {
       "name": {
         "multiple": true,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "identifier_field",
@@ -1894,11 +2084,15 @@
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "types": [
         {
           "type": "_expression",
+          "named": true
+        },
+        {
+          "type": "identifier_field",
           "named": true
         }
       ]

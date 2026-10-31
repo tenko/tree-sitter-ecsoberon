@@ -138,7 +138,12 @@ export default grammar({
     ),
 
     import_spec: $ => choice(
-      seq(field('name', $._import_alias_identifier), ':=', $._import_identifier),
+      seq(
+        field('name', $._import_alias_identifier),
+        ':=',
+        $._import_identifier,
+        optional(seq('(', optional(commaSep($._expression)), ')'))
+      ),
       field('name', $._import_identifier)
     ),
 
@@ -243,7 +248,7 @@ export default grammar({
 
     procedure_body: ($) => $.statement_list,
 
-    _procedure_footer: ($) => seq(
+    procedure_footer: ($) => seq(
       'END',
       field('name', $.identifier),
     ),
@@ -257,13 +262,13 @@ export default grammar({
       optional($.procedure_declaration),
       'BEGIN',
       optional($.procedure_body),
-      $._procedure_footer,
+      $.procedure_footer,
       terminator
     )),
 
     _formal_parameter_list: ($) => prec.left(seq(
       '(',
-      sep1($._formal_parameter, terminator),
+      optional(sep1($._formal_parameter, terminator)),
       ')',
       optional(seq(':', $._type))
     )),
@@ -313,7 +318,7 @@ export default grammar({
 
     selector_expression: $ => prec(PREC.primary, seq(
       field('qualiden', $.qualified_identifier),
-      field('parameters', optional(seq('(', commaSep($._expression), ')')))
+      field('parameters', optional(seq('(', optional(commaSep($._expression)), ')')))
     )),
 
     index_expression: $ => prec(PREC.primary, seq(
@@ -371,7 +376,10 @@ export default grammar({
 
     _simple_statement: $ => choice(
       $.assignment_statement,
+      $.call_statement
     ),
+
+    call_statement: $ => seq($.selector_expression),
 
     assignment_statement: $ => seq(
       field('left', $.identifier),

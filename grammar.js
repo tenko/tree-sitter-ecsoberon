@@ -382,7 +382,7 @@ export default grammar({
     call_statement: $ => seq($.selector_expression),
 
     assignment_statement: $ => seq(
-      field('left', $.identifier),
+      field('left', choice($.qualified_identifier, $.index_expression)),
       field('operator', ":="),
       field('right', $._expression),
     ),

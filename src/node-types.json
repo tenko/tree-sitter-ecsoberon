@@ -148,7 +148,11 @@
         "required": true,
         "types": [
           {
-            "type": "identifier",
+            "type": "index_expression",
+            "named": true
+          },
+          {
+            "type": "qualified_identifier",
             "named": true
           }
         ]
